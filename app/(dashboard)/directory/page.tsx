@@ -528,8 +528,10 @@ function DirectoryContent() {
                             setEditingId(null)
                             setFormData({
                                 name: '', cohort: '', region: '서울 강남', job: '', company: '',
-                                email: '', phone: '', introduction: '', tags: ''
+                                email: '', phone: '', introduction: '', tags: '', photo_url: ''
                             })
+                            setSelectedFile(null)
+                            setPreviewUrl(null)
                         }
                     }}>
                         <DialogTrigger asChild>
