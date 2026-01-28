@@ -27,17 +27,8 @@ export function Header() {
                     </SheetContent>
                 </Sheet>
 
-                {/* Search Bar */}
-                <div className="flex-1 max-w-xl">
-                    <div className="relative">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="동문 검색, 기수 찾기..."
-                            className="w-full bg-muted/40 pl-9 md:w-[300px] lg:w-[400px] border-none focus-visible:ring-primary/20"
-                        />
-                    </div>
-                </div>
+                {/* Search Bar Placeholder (Removed per user request) */}
+                <div className="flex-1" />
 
                 {/* Right Actions */}
                 <div className="flex items-center gap-2">
