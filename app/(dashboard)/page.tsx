@@ -187,34 +187,17 @@ export default function DashboardPage() {
         </Card>
 
         {/* Widget 2: Upcoming Events */}
-        <Card className="glass border-none shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => toast("준비 중", { description: "모임 페이지는 준비 중입니다." })}>
+        <Card className="glass border-none shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => toast("준비 중", { description: "모임 페이지는 준비 중입니다 곧 오픈됩니다!" })}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">이번 달 모임 📅</CardTitle>
             <CalendarDays className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2건</div>
-            <p className="text-xs text-muted-foreground mb-4">참여 가능한 행사가 있습니다.</p>
+            <div className="text-2xl font-bold">0건</div>
+            <p className="text-xs text-muted-foreground mb-4">예정된 행사가 없습니다.</p>
             <div className="space-y-3">
-              <div className="rounded-lg bg-muted/40 p-3 border border-border/50">
-                <div className="flex justify-between items-start mb-1">
-                  <span className="font-semibold text-sm">30회 졸업 20주년 홈커밍</span>
-                  <Badge variant="secondary" className="text-[10px] px-1 h-5 bg-pink-100 text-pink-700 hover:bg-pink-100">D-5</Badge>
-                </div>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <MapPin className="w-3 h-3" />
-                  <span>모교 대강당 • 10월 24일</span>
-                </div>
-              </div>
-              <div className="rounded-lg bg-muted/40 p-3 border border-border/50">
-                <div className="flex justify-between items-start mb-1">
-                  <span className="font-semibold text-sm">서울지부 정기총회</span>
-                  <Badge variant="outline" className="text-[10px] px-1 h-5">예정</Badge>
-                </div>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <MapPin className="w-3 h-3" />
-                  <span>강남역 파이낸스센터 • 10월 30일</span>
-                </div>
+              <div className="text-center py-6 text-sm text-muted-foreground bg-muted/20 rounded-lg border border-dashed border-border">
+                등록된 모임이 없습니다.
               </div>
             </div>
           </CardContent>
@@ -348,63 +331,23 @@ export default function DashboardPage() {
                   <p className="text-sm font-semibold">동문회 사무국</p>
                   <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="w-4 h-4" /></Button>
                 </div>
-                <p className="text-xs text-muted-foreground">2시간 전 • 공지사항</p>
+                <p className="text-xs text-muted-foreground">공지사항</p>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-sm leading-relaxed">
-                📢 [공지] 2024년도 살레시오 동문 가을 운동회 개최 안내 <br /> <br />
-                안녕하세요, 동문 여러분! 선선한 가을을 맞아 모두가 함께 즐길 수 있는 운동회를 준비했습니다.
-                오랜만에 교정을 거닐며 선후배간의 정을 나누는 시간이 되시길 바랍니다.
-              </p>
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
-                <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-                  이미지 (학교 전경)
-                </div>
-              </div>
-            </CardContent>
-            <div className="flex items-center justify-between p-4 pt-0 border-t border-border/30 mt-2">
-              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-                <Heart className="w-4 h-4" /> 45
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-                <MessageCircle className="w-4 h-4" /> 12
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-                <Share2 className="w-4 h-4" /> 공유
-              </Button>
-            </div>
-          </Card>
-
-          {/* Post Card 2 */}
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader className="flex flex-row items-start gap-4 space-y-0 pb-3">
-              <Avatar>
-                <AvatarFallback className="bg-yellow-100 text-yellow-700">홍</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">홍길순 (25회)</p>
-                  <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="w-4 h-4" /></Button>
-                </div>
-                <p className="text-xs text-muted-foreground">5시간 전 • 소소한 일상</p>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm leading-relaxed">
-                손주가 처음으로 학교에 입학했습니다. 우리 학교 다닐 때 생각도 나고 감회가 새롭네요.
-                다들 잘 지내시죠? ^^
+                📢 환영합니다! <br /> <br />
+                살레시오 여고 동문회 온라인 플랫폼에 오신 것을 환영합니다.
+                이곳에서 동문 찾기, 소식 공유, 모임 참여 등 다양한 활동을 즐겨보세요.<br />
+                현재 시스템 안정화 및 데이터 마이그레이션 작업이 진행 중입니다.
               </p>
             </CardContent>
             <div className="flex items-center justify-between p-4 pt-0 border-t border-border/30 mt-2">
               <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-                <Heart className="w-4 h-4" /> 128
+                <Heart className="w-4 h-4" /> 5
               </Button>
               <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-                <MessageCircle className="w-4 h-4" /> 34
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-                <Share2 className="w-4 h-4" /> 공유
+                <MessageCircle className="w-4 h-4" /> 0
               </Button>
             </div>
           </Card>
