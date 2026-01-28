@@ -1,0 +1,64 @@
+
+> salesio-alumnae-os@0.1.0 build
+> next build
+
+??Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 2 errors:
+./app/(dashboard)/admin/page.tsx:6:1
+Module not found: Can't resolve '@/components/ui/table'
+  4 | import { Button } from "@/components/ui/button"
+  5 | import { Input } from "@/components/ui/input"
+> 6 | import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 | import { Badge } from "@/components/ui/badge"
+  8 | import { Upload, CheckCircle, XCircle, FileSpreadsheet, PlusCircle } from "lucide-react"
+  9 |
+
+Import map: aliased to relative './components/ui/table' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./app/(dashboard)/admin/page.tsx [Client Component Browser]
+    ./app/(dashboard)/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/(dashboard)/admin/page.tsx [Client Component SSR]
+    ./app/(dashboard)/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./app/(dashboard)/library/page.tsx:3:1
+Module not found: Can't resolve '@/components/ui/tabs'
+  1 | 'use client'
+  2 |
+> 3 | import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { Card, CardContent } from "@/components/ui/card"
+  5 | import { Button } from "@/components/ui/button"
+  6 | import { Download, FileText, Image as ImageIcon } from "lucide-react"
+
+Import map: aliased to relative './components/ui/tabs' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./app/(dashboard)/library/page.tsx [Client Component Browser]
+    ./app/(dashboard)/library/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/(dashboard)/library/page.tsx [Client Component SSR]
+    ./app/(dashboard)/library/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (./app/(dashboard)/admin/page.tsx:6:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./app/(dashboard)/library/page.tsx:3:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
