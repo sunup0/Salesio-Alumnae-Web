@@ -63,6 +63,16 @@ export default function DashboardPage() {
       const list = data || []
       const total = list.length
 
+      // Dues Stats
+      const paidCount = list.filter((p: any) => p.payment_status === 'paid').length
+      const unpaidCount = list.filter((p: any) => p.payment_status === 'unpaid').length
+      const paidPercent = total > 0 ? Math.round((paidCount / total) * 100) : 0
+
+      // Birthday Stats
+      const today = new Date()
+      const todayStr = today.toISOString().slice(5, 10) // MM-DD
+      const todayBirthdays = list.filter((p: any) => p.birthday && p.birthday.endsWith(todayStr))
+
       const countBy = (key: string) => {
         const counts: Record<string, number> = {}
         list.forEach((p: any) => {
@@ -79,7 +89,11 @@ export default function DashboardPage() {
         cohort: countBy('cohort') as any,
         region: countBy('region') as any,
         job: countBy('job') as any,
-        total
+        total,
+        paidCount,
+        unpaidCount,
+        paidPercent,
+        todayBirthdays
       })
       setIsLoaded(true)
     }
