@@ -644,7 +644,9 @@ function DirectoryContent() {
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button type="button" onClick={handleSubmit}>{editingId ? '수정 완료' : '등록하기'}</Button>
+                                <Button type="button" onClick={handleSubmit} disabled={uploading}>
+                                    {uploading ? '처리 중...' : (editingId ? '수정 완료' : '등록하기')}
+                                </Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
