@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Search, Filter, MapPin, Briefcase, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus, Mail, Phone, Hash } from "lucide-react"
+import { Search, Filter, MapPin, Briefcase, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus, Mail, Phone, Hash, Upload, X } from "lucide-react"
 import { fakerKO as faker } from '@faker-js/faker'
 import { toast } from "sonner"
 import { supabase } from "@/utils/supabase/client"
@@ -83,6 +83,9 @@ function DirectoryContent() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [selectedAlumna, setSelectedAlumna] = useState<any>(null)
     const [editingId, setEditingId] = useState<number | null>(null)
+    const [uploading, setUploading] = useState(false)
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
     // Filter States
     const [selectedRegions, setSelectedRegions] = useState<string[]>([])
@@ -164,6 +167,7 @@ function DirectoryContent() {
         phone: '',
         introduction: '',
         tags: '',
+        photo_url: ''
     })
 
     // Filter Logic
@@ -286,8 +290,15 @@ function DirectoryContent() {
             phone: alumna.phone,
             introduction: alumna.introduction,
             tags: alumna.tags.join(', '),
+            photo_url: alumna.photo_url || ''
         })
         setEditingId(alumna.id)
+        if (alumna.photo_url) {
+            setPreviewUrl(alumna.photo_url)
+        } else {
+            setPreviewUrl(null)
+        }
+        setSelectedFile(null)
         setIsDialogOpen(true)
     }
 
@@ -305,6 +316,36 @@ function DirectoryContent() {
             return
         }
 
+        let photoUrl = formData.photo_url
+
+        // 1. Upload Photo if selected
+        if (selectedFile) {
+            setUploading(true)
+            const fileExt = selectedFile.name.split('.').pop()
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+            const bucket = 'alumnae-photos'
+
+            try {
+                const { error: uploadError } = await supabase.storage
+                    .from(bucket)
+                    .upload(fileName, selectedFile)
+
+                if (uploadError) throw uploadError
+
+                const { data: { publicUrl } } = supabase.storage
+                    .from(bucket)
+                    .getPublicUrl(fileName)
+
+                photoUrl = publicUrl
+            } catch (error: any) {
+                console.error("Upload failed", error)
+                toast.error("사진 업로드 실패", { description: error.message || "권한을 확인해주세요." })
+                setUploading(false)
+                return
+            }
+            setUploading(false)
+        }
+
         const commonData = {
             name: formData.name,
             cohort: parseInt(formData.cohort),
@@ -315,6 +356,7 @@ function DirectoryContent() {
             email: formData.email || 'email@example.com',
             phone: formData.phone || '010-0000-0000',
             introduction: formData.introduction || '안녕하세요!',
+            photo_url: photoUrl
         }
 
         if (editingId) {
@@ -360,8 +402,10 @@ function DirectoryContent() {
         setEditingId(null)
         setFormData({
             name: '', cohort: '', region: '서울 강남', job: '', company: '',
-            email: '', phone: '', introduction: '', tags: ''
+            email: '', phone: '', introduction: '', tags: '', photo_url: ''
         })
+        setSelectedFile(null)
+        setPreviewUrl(null)
     }
 
     return (
@@ -584,6 +628,7 @@ function DirectoryContent() {
                                     <AvatarFallback className="bg-gradient-to-br from-pink-100 to-purple-100 text-primary font-bold">
                                         {person.name[0]}
                                     </AvatarFallback>
+                                    {person.photo_url && <img src={person.photo_url} alt={person.name} className="h-full w-full object-cover" />}
                                 </Avatar>
                                 <Badge variant="secondary" className="glass bg-primary/5 text-primary">
                                     {person.cohort}회
