@@ -40,10 +40,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox"
 import { Slider } from "@/components/ui/slider"
 
-// Mock Data Generation (500 items)
-const generateAlumnae = (count: number) => {
+// Mock Data Generation
+const generateAlumnae = (count: number, startId: number = 1) => {
     return Array.from({ length: count }, (_, i) => ({
-        id: i + 1,
+        id: startId + i,
         name: faker.person.fullName(),
         cohort: faker.number.int({ min: 1, max: 60 }),
         region: faker.helpers.arrayElement(['서울 강남', '서울 서초', '서울 마포', '경기 분당', '부산 해운대', '미국 뉴욕', '호주 시드니', '광주 동구', '대구 수성']),
@@ -66,6 +66,21 @@ export default function DirectoryPage() {
     // State for Alumnae List
     const [alumnaeList, setAlumnaeList] = useState<any[]>([])
     const [isLoaded, setIsLoaded] = useState(false)
+    const [searchTerm, setSearchTerm] = useState('')
+    const [currentPage, setCurrentPage] = useState(1)
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [selectedAlumna, setSelectedAlumna] = useState<any>(null)
+    const [editingId, setEditingId] = useState<number | null>(null)
+
+    // Filter States
+    const [selectedRegions, setSelectedRegions] = useState<string[]>([])
+    const [selectedTags, setSelectedTags] = useState<string[]>([])
+    const [cohortRange, setCohortRange] = useState([1, 60])
+    const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid' | 'unpaid'>('all')
+    const [birthdayFilter, setBirthdayFilter] = useState<'all' | 'today' | 'month'>('all')
+
+    const uniqueRegions = useMemo(() => Array.from(new Set(alumnaeList.map(a => a.region))).sort(), [alumnaeList])
+    const uniqueTags = useMemo(() => Array.from(new Set(alumnaeList.flatMap(a => a.tags))).sort(), [alumnaeList])
 
     // Load data from LocalStorage on mount
     useEffect(() => {
@@ -80,6 +95,16 @@ export default function DirectoryPage() {
         }
         setIsLoaded(true)
     }, [])
+
+    const handleAddMockData = () => {
+        const startId = alumnaeList.length > 0 ? Math.max(...alumnaeList.map(a => a.id)) + 1 : 1
+        const newMembers = generateAlumnae(500, startId)
+        const updatedList = [...alumnaeList, ...newMembers].sort((a, b) => a.name.localeCompare(b.name))
+
+        setAlumnaeList(updatedList)
+        localStorage.setItem('salesio-alumnae-list', JSON.stringify(updatedList))
+        toast.success(`가상 동문 500명이 추가되었습니다. (총 ${updatedList.length}명)`)
+    }
 
     // Apply URL Params Filters
     useEffect(() => {
@@ -336,6 +361,9 @@ export default function DirectoryPage() {
                             onChange={handleSearch}
                         />
                     </div>
+                    <Button variant="outline" onClick={handleAddMockData} className="gap-2 hidden md:flex">
+                        <Plus className="w-4 h-4" /> 500명 추가
+                    </Button>
                     <Button variant="ghost" onClick={handleDeleteAll} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
                         전체 삭제
                     </Button>
