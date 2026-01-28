@@ -328,15 +328,30 @@ function DirectoryContent() {
 
             toast.success("정보가 수정되었습니다.")
         } else {
-            // Create New
-            const newAlumna = {
-                id: alumnaeList.length > 0 ? Math.max(...alumnaeList.map(a => a.id)) + 1 : 1,
-                ...commonData
+            // Create New (Supabase)
+            const newData = {
+                ...commonData,
+                birthday: faker.date.birthdate().toISOString().slice(5, 10), // Random for new
+                payment_status: 'unpaid' // Default
             }
-            setAlumnaeList([newAlumna, ...alumnaeList])
-            toast.success("등록되었습니다!", {
-                description: `${newAlumna.name} 동문님이 명단에 추가되었습니다.`
-            })
+
+            const { data, error } = await supabase
+                .from('alumnae')
+                .insert([newData])
+                .select()
+
+            if (error) {
+                toast.error("등록 실패", { description: error.message })
+                return
+            }
+
+            if (data && data.length > 0) {
+                const newAlumna = data[0]
+                setAlumnaeList([newAlumna, ...alumnaeList])
+                toast.success("등록되었습니다!", {
+                    description: `${newAlumna.name} 동문님이 명단에 추가되었습니다.`
+                })
+            }
             setSearchTerm('')
             setCurrentPage(1)
         }
