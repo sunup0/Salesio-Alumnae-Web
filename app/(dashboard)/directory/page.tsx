@@ -545,6 +545,48 @@ function DirectoryContent() {
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
+                                {/* Photo Upload */}
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label className="text-right">프로필 사진</Label>
+                                    <div className="col-span-3 flex items-center gap-4">
+                                        <Avatar className="h-16 w-16 border border-border">
+                                            <AvatarFallback>{formData.name ? formData.name[0] : '사진'}</AvatarFallback>
+                                            {previewUrl && <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />}
+                                        </Avatar>
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                <Button type="button" variant="outline" size="sm" className="relative overflow-hidden">
+                                                    <Upload className="w-3 h-3 mr-2" />
+                                                    {uploading ? '업로드 중...' : '사진 선택'}
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                                        disabled={uploading}
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files?.[0]
+                                                            if (!file) return
+
+                                                            setSelectedFile(file)
+                                                            setPreviewUrl(URL.createObjectURL(file))
+                                                        }}
+                                                    />
+                                                </Button>
+                                                {previewUrl && (
+                                                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => {
+                                                        setSelectedFile(null)
+                                                        setPreviewUrl(null)
+                                                        setFormData({ ...formData, photo_url: '' })
+                                                    }}>
+                                                        <X className="w-4 h-4" />
+                                                    </Button>
+                                                )}
+                                            </div>
+                                            <span className="text-xs text-muted-foreground">JPG, PNG (최대 2MB)</span>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="grid grid-cols-4 items-center gap-4">
                                     <Label htmlFor="name" className="text-right">이름 <span className="text-red-500">*</span></Label>
                                     <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="col-span-3" placeholder="홍길동" />
