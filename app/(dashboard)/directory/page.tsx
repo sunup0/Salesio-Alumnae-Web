@@ -245,20 +245,32 @@ function DirectoryContent() {
         toast.info("필터가 초기화되었습니다.")
     }
 
-    const handleDeleteAll = () => {
-        if (window.confirm("정말로 모든 동문 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
-            setAlumnaeList([])
-            localStorage.removeItem('salesio-alumnae-list')
-            toast.success("모든 데이터가 삭제되었습니다.")
+    const handleDeleteAll = async () => {
+        if (window.confirm("정말로 모든 동문 데이터를 삭제하시겠습니까? (DB에서 영구 삭제됩니다)")) {
+            // Supabase doesn't support easy bulk delete of all without WHERE, so we delete where ID > 0
+            const { error } = await supabase.from('alumnae').delete().gt('id', 0)
+
+            if (error) {
+                toast.error("삭제 실패", { description: error.message })
+            } else {
+                setAlumnaeList([])
+                toast.success("모든 데이터가 삭제되었습니다.")
+            }
         }
     }
 
     // Individual Delete
-    const handleDelete = (id: number) => {
+    const handleDelete = async (id: number) => {
         if (window.confirm("이 동문 정보를 삭제하시겠습니까?")) {
-            setAlumnaeList(prev => prev.filter(p => p.id !== id))
-            setSelectedAlumna(null) // Close detail sheet
-            toast.success("삭제되었습니다.")
+            const { error } = await supabase.from('alumnae').delete().eq('id', id)
+
+            if (error) {
+                toast.error("삭제 실패", { description: error.message })
+            } else {
+                setAlumnaeList(prev => prev.filter(p => p.id !== id))
+                setSelectedAlumna(null) // Close detail sheet
+                toast.success("삭제되었습니다.")
+            }
         }
     }
 
