@@ -316,96 +316,101 @@ function DirectoryContent() {
             return
         }
 
-        let photoUrl = formData.photo_url
+        const toastId = toast.loading("처리 중입니다...")
+        setUploading(true)
 
-        // 1. Upload Photo if selected
-        if (selectedFile) {
-            setUploading(true)
-            const fileExt = selectedFile.name.split('.').pop()
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-            const bucket = 'alumnae-photos'
+        try {
+            let photoUrl = formData.photo_url
 
-            try {
+            // 1. Upload Photo if selected
+            if (selectedFile) {
+                const fileExt = selectedFile.name.split('.').pop()
+                const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+                const bucket = 'alumnae-photos'
+
                 const { error: uploadError } = await supabase.storage
                     .from(bucket)
                     .upload(fileName, selectedFile)
 
-                if (uploadError) throw uploadError
+                if (uploadError) throw new Error(`사진 업로드 오류: ${uploadError.message}`)
 
                 const { data: { publicUrl } } = supabase.storage
                     .from(bucket)
                     .getPublicUrl(fileName)
 
                 photoUrl = publicUrl
-            } catch (error: any) {
-                console.error("Upload failed", error)
-                toast.error("사진 업로드 실패", { description: error.message || "권한을 확인해주세요." })
-                setUploading(false)
-                return
             }
+
+            const commonData = {
+                name: formData.name,
+                cohort: parseInt(formData.cohort),
+                region: formData.region,
+                job: formData.job || '직업 미입력',
+                company: formData.company || '소속 미입력',
+                tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(t => t) : ['신규회원'],
+                email: formData.email || 'email@example.com',
+                phone: formData.phone || '010-0000-0000',
+                introduction: formData.introduction || '안녕하세요!',
+                photo_url: photoUrl
+            }
+
+            if (editingId) {
+                // Update Existing
+                const { error } = await supabase
+                    .from('alumnae')
+                    .update(commonData)
+                    .eq('id', editingId)
+
+                if (error) throw error
+
+                setAlumnaeList(prev => prev.map(p => p.id === editingId ? { ...p, ...commonData } : p))
+                if (selectedAlumna && selectedAlumna.id === editingId) {
+                    setSelectedAlumna({ ...selectedAlumna, ...commonData })
+                }
+                toast.success("정보가 수정되었습니다.", { id: toastId })
+            } else {
+                // Create New
+                const newData = {
+                    ...commonData,
+                    birthday: faker.date.birthdate().toISOString().slice(5, 10),
+                    payment_status: 'unpaid'
+                }
+
+                const { data, error } = await supabase
+                    .from('alumnae')
+                    .insert([newData])
+                    .select()
+
+                if (error) throw error
+
+                if (data && data.length > 0) {
+                    const newAlumna = data[0]
+                    setAlumnaeList([newAlumna, ...alumnaeList])
+                    toast.success("등록되었습니다!", { id: toastId })
+                }
+                setSearchTerm('')
+                setCurrentPage(1)
+            }
+
+            // Cleanup
+            setIsDialogOpen(false)
+            setEditingId(null)
+            setFormData({
+                name: '', cohort: '', region: '서울 강남', job: '', company: '',
+                email: '', phone: '', introduction: '', tags: '', photo_url: ''
+            })
+            setSelectedFile(null)
+            setPreviewUrl(null)
+
+        } catch (error: any) {
+            console.error("Submit failed", error)
+            toast.error("처리 실패", {
+                description: error.message || "알 수 없는 오류가 발생했습니다.",
+                id: toastId
+            })
+        } finally {
             setUploading(false)
         }
-
-        const commonData = {
-            name: formData.name,
-            cohort: parseInt(formData.cohort),
-            region: formData.region,
-            job: formData.job || '직업 미입력',
-            company: formData.company || '소속 미입력',
-            tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(t => t) : ['신규회원'],
-            email: formData.email || 'email@example.com',
-            phone: formData.phone || '010-0000-0000',
-            introduction: formData.introduction || '안녕하세요!',
-            photo_url: photoUrl
-        }
-
-        if (editingId) {
-            // Update Existing
-            setAlumnaeList(prev => prev.map(p => p.id === editingId ? { ...p, ...commonData } : p))
-
-            // If currently viewing this person, update the view too
-            if (selectedAlumna && selectedAlumna.id === editingId) {
-                setSelectedAlumna({ ...selectedAlumna, ...commonData })
-            }
-
-            toast.success("정보가 수정되었습니다.")
-        } else {
-            // Create New (Supabase)
-            const newData = {
-                ...commonData,
-                birthday: faker.date.birthdate().toISOString().slice(5, 10), // Random for new
-                payment_status: 'unpaid' // Default
-            }
-
-            const { data, error } = await supabase
-                .from('alumnae')
-                .insert([newData])
-                .select()
-
-            if (error) {
-                toast.error("등록 실패", { description: error.message })
-                return
-            }
-
-            if (data && data.length > 0) {
-                const newAlumna = data[0]
-                setAlumnaeList([newAlumna, ...alumnaeList])
-                toast.success("등록되었습니다!", {
-                    description: `${newAlumna.name} 동문님이 명단에 추가되었습니다.`
-                })
-            }
-            setSearchTerm('')
-            setCurrentPage(1)
-        }
-
-        setIsDialogOpen(false)
-        setEditingId(null)
-        setFormData({
-            name: '', cohort: '', region: '서울 강남', job: '', company: '',
-            email: '', phone: '', introduction: '', tags: '', photo_url: ''
-        })
-        setSelectedFile(null)
-        setPreviewUrl(null)
     }
 
     return (
@@ -418,7 +423,7 @@ function DirectoryContent() {
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
 
-                    <Button variant="ghost" onClick={handleDeleteAll} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
+                    <Button variant="ghost" onClick={handleDeleteAll} className="text-destructive hover:text-destructive-foreground hover:bg-destructive/10">
                         전체 삭제
                     </Button>
                     {/* Filter Popover */}
@@ -780,6 +785,7 @@ function DirectoryContent() {
                                         <AvatarFallback className="text-3xl bg-gradient-to-br from-white to-pink-50 text-primary font-bold">
                                             {selectedAlumna.name[0]}
                                         </AvatarFallback>
+                                        {selectedAlumna.photo_url && <img src={selectedAlumna.photo_url} alt={selectedAlumna.name} className="h-full w-full object-cover" />}
                                     </Avatar>
                                     <div className="mb-1 text-right">
                                         <Badge variant="secondary" className="text-sm px-3 py-1 shadow-sm bg-background/80 backdrop-blur-md border-primary/20 text-primary">
