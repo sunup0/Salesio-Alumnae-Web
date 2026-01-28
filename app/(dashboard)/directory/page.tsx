@@ -96,15 +96,7 @@ export default function DirectoryPage() {
         setIsLoaded(true)
     }, [])
 
-    const handleAddMockData = () => {
-        const startId = alumnaeList.length > 0 ? Math.max(...alumnaeList.map(a => a.id)) + 1 : 1
-        const newMembers = generateAlumnae(500, startId)
-        const updatedList = [...alumnaeList, ...newMembers].sort((a, b) => a.name.localeCompare(b.name))
 
-        setAlumnaeList(updatedList)
-        localStorage.setItem('salesio-alumnae-list', JSON.stringify(updatedList))
-        toast.success(`가상 동문 500명이 추가되었습니다. (총 ${updatedList.length}명)`)
-    }
 
     // Apply URL Params Filters
     useEffect(() => {
@@ -141,21 +133,6 @@ export default function DirectoryPage() {
         }
     }, [alumnaeList, isLoaded])
 
-    const [searchTerm, setSearchTerm] = useState('')
-    const [currentPage, setCurrentPage] = useState(1)
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [selectedAlumna, setSelectedAlumna] = useState<any>(null)
-    const [editingId, setEditingId] = useState<number | null>(null)
-
-    // Filter States
-    const [selectedRegions, setSelectedRegions] = useState<string[]>([])
-    const [selectedTags, setSelectedTags] = useState<string[]>([])
-    const [cohortRange, setCohortRange] = useState([1, 60])
-    const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid' | 'unpaid'>('all')
-    const [birthdayFilter, setBirthdayFilter] = useState<'all' | 'today' | 'month'>('all')
-
-    const uniqueRegions = useMemo(() => Array.from(new Set(alumnaeList.map(a => a.region))).sort(), [alumnaeList])
-    const uniqueTags = useMemo(() => Array.from(new Set(alumnaeList.flatMap(a => a.tags))).sort(), [alumnaeList])
 
     // Form State
     const [formData, setFormData] = useState({
@@ -361,9 +338,6 @@ export default function DirectoryPage() {
                             onChange={handleSearch}
                         />
                     </div>
-                    <Button variant="outline" onClick={handleAddMockData} className="gap-2 hidden md:flex">
-                        <Plus className="w-4 h-4" /> 500명 추가
-                    </Button>
                     <Button variant="ghost" onClick={handleDeleteAll} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
                         전체 삭제
                     </Button>
