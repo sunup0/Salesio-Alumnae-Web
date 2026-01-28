@@ -124,6 +124,11 @@ export default function DirectoryPage() {
         if (birthdayParam === 'today' || birthdayParam === 'month') {
             setBirthdayFilter(birthdayParam)
         }
+
+        const tagParam = searchParams.get('tag')
+        if (tagParam) {
+            setSelectedTags([tagParam])
+        }
     }, [searchParams])
 
     // Save to LocalStorage whenever list changes

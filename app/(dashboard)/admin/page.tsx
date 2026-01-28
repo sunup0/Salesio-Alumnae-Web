@@ -8,7 +8,11 @@ import { Badge } from "@/components/ui/badge"
 import { Upload, CheckCircle, XCircle, FileSpreadsheet, PlusCircle } from "lucide-react"
 import { toast } from "sonner"
 
+import { useRouter } from "next/navigation"
+
 export default function AdminPage() {
+    const router = useRouter()
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex justify-between items-center">
@@ -19,7 +23,7 @@ export default function AdminPage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <Card className="glass">
+                <Card className="glass cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push('/directory?tag=신규회원')}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">신규 가입 대기</CardTitle>
                         <PlusCircle className="h-4 w-4 text-muted-foreground" />
@@ -39,7 +43,7 @@ export default function AdminPage() {
                         <p className="text-xs text-muted-foreground">목표 대비 82% 달성</p>
                     </CardContent>
                 </Card>
-                <Card className="glass">
+                <Card className="glass cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push('/directory?payment=unpaid')}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">미납 회원</CardTitle>
                         <XCircle className="h-4 w-4 text-destructive" />
