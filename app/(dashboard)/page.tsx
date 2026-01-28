@@ -36,7 +36,10 @@ export default function DashboardPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [formData, setFormData] = useState(DEFAULT_PROFILE)
   const [isLoaded, setIsLoaded] = useState(false)
-  const [alumnaeStats, setAlumnaeStats] = useState({ cohort: [], region: [], job: [], total: 0 })
+  const [alumnaeStats, setAlumnaeStats] = useState({
+    cohort: [], region: [], job: [], total: 0,
+    paidCount: 0, unpaidCount: 0, paidPercent: 0, todayBirthdays: [] as any[]
+  })
 
   // Load from LocalStorage (UserProfile) and Supabase (Stats)
   useEffect(() => {
@@ -162,27 +165,23 @@ export default function DashboardPage() {
             <Gift className="h-4 w-4 text-pink-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3명</div>
+            <div className="text-2xl font-bold">{alumnaeStats.todayBirthdays.length}명</div>
             <p className="text-xs text-muted-foreground mb-4">축하 메시지를 보내보세요!</p>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-8 w-8 border-2 border-background">
-                  <AvatarFallback className="bg-pink-100 text-pink-700">이</AvatarFallback>
-                </Avatar>
-                <div className="text-sm">
-                  <p className="font-medium">이미소 (31회)</p>
+              {alumnaeStats.todayBirthdays.slice(0, 2).map((person: any) => (
+                <div key={person.id} className="flex items-center gap-3">
+                  <Avatar className="h-8 w-8 border-2 border-background">
+                    <AvatarFallback className="bg-pink-100 text-pink-700">{person.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="text-sm">
+                    <p className="font-medium">{person.name} ({person.cohort}회)</p>
+                  </div>
+                  <Button size="sm" variant="ghost" className="ml-auto h-7 text-xs" onClick={(e) => { e.stopPropagation(); toast.success("축하 메시지를 보냈습니다! 🎉"); }}>축하하기</Button>
                 </div>
-                <Button size="sm" variant="ghost" className="ml-auto h-7 text-xs" onClick={(e) => { e.stopPropagation(); toast.success("축하 메시지를 보냈습니다! 🎉"); }}>축하하기</Button>
-              </div>
-              <div className="flex items-center gap-3">
-                <Avatar className="h-8 w-8 border-2 border-background">
-                  <AvatarFallback className="bg-blue-100 text-blue-700">박</AvatarFallback>
-                </Avatar>
-                <div className="text-sm">
-                  <p className="font-medium">박수진 (28회)</p>
-                </div>
-                <Button size="sm" variant="ghost" className="ml-auto h-7 text-xs" onClick={(e) => { e.stopPropagation(); toast.success("축하 메시지를 보냈습니다! 🎉"); }}>축하하기</Button>
-              </div>
+              ))}
+              {alumnaeStats.todayBirthdays.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-2">오늘 생일인 동문이 없습니다.</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -228,19 +227,19 @@ export default function DashboardPage() {
             <TrendingUp className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">82%</div>
-            <p className="text-xs text-muted-foreground mb-4">지난달 대비 +5% 증가</p>
+            <div className="text-2xl font-bold">{alumnaeStats.paidPercent}%</div>
+            <p className="text-xs text-muted-foreground mb-4">전체 {alumnaeStats.total}명 중</p>
             <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-              <div className="h-full bg-primary/80 w-[82%] rounded-full" />
+              <div className="h-full bg-primary/80 rounded-full transition-all duration-1000" style={{ width: `${alumnaeStats.paidPercent}%` }} />
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
               <div className="rounded-md bg-white/50 dark:bg-black/20 p-2 text-center cursor-pointer hover:bg-white/80 transition-colors" onClick={() => router.push('/directory?payment=paid')}>
                 <p className="text-muted-foreground">납부 완료</p>
-                <p className="font-bold text-primary">1,240명</p>
+                <p className="font-bold text-primary">{alumnaeStats.paidCount}명</p>
               </div>
               <div className="rounded-md bg-white/50 dark:bg-black/20 p-2 text-center cursor-pointer hover:bg-white/80 transition-colors" onClick={() => router.push('/directory?payment=unpaid')}>
                 <p className="text-muted-foreground">미납</p>
-                <p className="font-bold text-destructive">280명</p>
+                <p className="font-bold text-destructive">{alumnaeStats.unpaidCount}명</p>
               </div>
             </div>
           </CardContent>
