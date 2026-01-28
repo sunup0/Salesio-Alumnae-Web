@@ -574,7 +574,7 @@ export default function DirectoryPage() {
                             </div>
 
                             <div className="mt-4 flex flex-wrap gap-1.5">
-                                {person.tags.map(tag => (
+                                {person.tags.map((tag: string) => (
                                     <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground border border-border/50">
                                         #{tag}
                                     </span>
