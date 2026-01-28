@@ -291,7 +291,7 @@ function DirectoryContent() {
         setIsDialogOpen(true)
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         // Validation
         const errors: string[] = []
         if (!formData.name.trim()) errors.push("이름")
@@ -308,15 +308,13 @@ function DirectoryContent() {
         const commonData = {
             name: formData.name,
             cohort: parseInt(formData.cohort),
-            region: formData.region as any,
+            region: formData.region,
             job: formData.job || '직업 미입력',
             company: formData.company || '소속 미입력',
             tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(t => t) : ['신규회원'],
             email: formData.email || 'email@example.com',
             phone: formData.phone || '010-0000-0000',
             introduction: formData.introduction || '안녕하세요!',
-            birthday: faker.date.birthdate().toISOString().slice(5, 10), // Random for new
-            paymentStatus: 'unpaid' // Default
         }
 
         if (editingId) {
