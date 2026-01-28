@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -61,6 +61,14 @@ const generateAlumnae = (count: number, startId: number = 1) => {
 const ITEMS_PER_PAGE = 12
 
 export default function DirectoryPage() {
+    return (
+        <Suspense fallback={<div className="flex h-[50vh] items-center justify-center">Loading...</div>}>
+            <DirectoryContent />
+        </Suspense>
+    )
+}
+
+function DirectoryContent() {
     const searchParams = useSearchParams()
 
     // State for Alumnae List
