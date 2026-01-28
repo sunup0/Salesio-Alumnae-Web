@@ -373,15 +373,7 @@ function DirectoryContent() {
                     <p className="text-muted-foreground mt-1">총 {alumnaeList.length}명의 자랑스러운 동문들이 등록되어 있습니다.</p>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
-                    <div className="relative flex-1 md:w-64">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="이름, 기수, 직업, 태그 검색..."
-                            className="pl-9 glass"
-                            value={searchTerm}
-                            onChange={handleSearch}
-                        />
-                    </div>
+
                     <Button variant="ghost" onClick={handleDeleteAll} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
                         전체 삭제
                     </Button>
