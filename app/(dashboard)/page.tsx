@@ -28,6 +28,8 @@ const DEFAULT_PROFILE = {
   introduction: '오늘도 살레시오 동문들과 함께 따뜻한 하루 보내세요.',
 }
 
+import { supabase } from "@/utils/supabase/client"
+
 export default function DashboardPage() {
   const router = useRouter()
   const [userProfile, setUserProfile] = useState(DEFAULT_PROFILE)
@@ -36,7 +38,7 @@ export default function DashboardPage() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [alumnaeStats, setAlumnaeStats] = useState({ cohort: [], region: [], job: [], total: 0 })
 
-  // Load from LocalStorage
+  // Load from LocalStorage (UserProfile) and Supabase (Stats)
   useEffect(() => {
     // User Profile
     const savedProfile = localStorage.getItem('salesio-user-profile')
@@ -46,15 +48,21 @@ export default function DashboardPage() {
       setFormData(parsed) // Sync form data
     }
 
-    // Alumnae Stats
-    const savedList = localStorage.getItem('salesio-alumnae-list')
-    if (savedList) {
-      const list = JSON.parse(savedList) as any[]
+    // Alumnae Stats from Supabase
+    const fetchStats = async () => {
+      const { data, error } = await supabase.from('alumnae').select('*')
+
+      if (error) {
+        console.error('Error fetching stats:', error)
+        return
+      }
+
+      const list = data || []
       const total = list.length
 
       const countBy = (key: string) => {
         const counts: Record<string, number> = {}
-        list.forEach(p => {
+        list.forEach((p: any) => {
           const val = p[key]
           if (val) counts[val] = (counts[val] || 0) + 1
         })
@@ -70,9 +78,10 @@ export default function DashboardPage() {
         job: countBy('job') as any,
         total
       })
+      setIsLoaded(true)
     }
 
-    setIsLoaded(true)
+    fetchStats()
   }, [])
 
   // Save to LocalStorage
